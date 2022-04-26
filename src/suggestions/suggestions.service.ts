@@ -13,6 +13,14 @@ export class SuggestionsService {
     return this.cityModel.find().exec();
   }
 
+  async find(name, latitude, longitude): Promise<City[]> {
+    return this.cityModel.find({
+      name: name,
+      lat: latitude,
+      long: longitude
+    }).exec();
+  }
+
   async findOne(id: string): Promise<City> {
     return this.cityModel.findOne({ _id: id }).exec();
   }
