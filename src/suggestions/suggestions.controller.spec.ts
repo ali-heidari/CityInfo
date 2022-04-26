@@ -73,7 +73,7 @@ describe('SuggestionsController', () => {
     expect(controller.getSuggestions('London', null, null, null, null)).resolves.toEqual(city_london_mock);
   });
 
-  it('should return London info(coordinates included)', () => {
+  it('should return London info(including coordinates)', () => {
     expect(controller.getSuggestions('London', 39.88645, -83.44825, null, null)).resolves.toEqual(city_london_mock);
   });
 
