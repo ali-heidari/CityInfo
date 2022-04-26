@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Exception } from 'src/exceptions/exception';
+import { RequiredParameterException } from '../exceptions';
 import { SuggestionsController } from './suggestions.controller';
 import { SuggestionsService } from './suggestions.service';
 
@@ -26,12 +26,12 @@ describe('SuggestionsController', () => {
     expect(controller.getSuggestions('london', null, null, null)).resolves.toBeInstanceOf(Array);
   });
 
-  it('should return an array"', () => {
-    expect(controller.getSuggestions(null, null, null, null)).resolves.toThrowError(Exception);
+  it('should not accept null query"', () => {
+    expect(controller.getSuggestions(null, null, null, null)).resolves.toThrowError(RequiredParameterException);
   });
 
-  it('should return an array"', () => {
-    expect(controller.getSuggestions('', null, null, null)).resolves.toThrowError(Exception);
+  it('should not accept empty query', () => {
+    expect(controller.getSuggestions('', null, null, null)).resolves.toThrowError(RequiredParameterException);
   });
 
 });
