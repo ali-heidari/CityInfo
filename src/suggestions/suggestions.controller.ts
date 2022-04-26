@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { SortType } from 'src/sort-type';
+import { SortType } from '../sort-type';
 import { RequiredParameterException } from '../exceptions';
 import { City } from './schemas/city.schema';
 import { SuggestionsService } from './suggestions.service';

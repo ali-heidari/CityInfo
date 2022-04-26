@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortType } from 'src/sort-type';
+import { SortType } from '../sort-type';
 import { RequiredParameterException } from '../exceptions';
 import { SuggestionsController } from './suggestions.controller';
 import { SuggestionsService } from './suggestions.service';
