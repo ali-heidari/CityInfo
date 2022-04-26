@@ -7,6 +7,6 @@ import { City, CitySchema } from './schemas/city.schema';
 @Module({
     imports: [MongooseModule.forFeature([{ name: City.name, schema: CitySchema }])],
     controllers: [SuggestionsController],
-    providers: [SuggestionsService],
+    providers: [SuggestionsService]
 })
 export class SuggestionsModule { }
