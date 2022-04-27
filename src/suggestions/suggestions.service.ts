@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Exception, RequiredParameterException } from 'src/exceptions';
+import { CityModel } from 'src/models/city';
 import { GeoPoint } from 'src/models/geo-point';
 import { City, CityDocument } from './schemas/city.schema';
 
@@ -43,15 +44,18 @@ export class SuggestionsService {
     return new GeoPoint(lat * this.RadiansToDegrees, lon * this.RadiansToDegrees);
   }
 
+  private async query(conditions) {
+    const result = await this.cityModel.find(conditions, { _id: 0, 'name': 1, 'lat': 1, 'long': 1 }).exec();
+    return result.map(item => new CityModel(item.name, item.lat, item.long, 0));
+  }
+
   /**
    * Find items by name
    * @param name can be complete or partial
    * @returns List of cities
    */
-  private async findByName(name: string): Promise<City[]> {
-    return this.cityModel.find({
-      name: name + /.*/
-    }).exec();
+  private findByName(name: string): Promise<CityModel[]> {
+    return this.query({ name: name + /.*/ });
   }
 
   /**
@@ -61,12 +65,8 @@ export class SuggestionsService {
    * @param longitude source longitude
    * @returns List of cities
    */
-  private async findByCoordinate(name: string, latitude: number, longitude: number): Promise<City[]> {
-    return this.cityModel.find({
-      name: name + /.*/,
-      lat: latitude,
-      long: longitude
-    }).exec();
+  private findByCoordinate(name: string, latitude: number, longitude: number): Promise<CityModel[]> {
+    return this.query({ name: name + /.*/, lat: latitude, long: longitude });
   }
 
   /**
@@ -77,18 +77,18 @@ export class SuggestionsService {
    * @param radius Radius in meters
    * @returns List of cities
    */
-  private async findByRadius(name: string, latitude: number, longitude: number, radius: number): Promise<City[]> {
+  private findByRadius(name: string, latitude: number, longitude: number, radius: number): Promise<CityModel[]> {
     let topLatLng = this.getLatitudeLongitude(latitude, longitude, radius, 0);
     let bottomLatLng = this.getLatitudeLongitude(latitude, longitude, radius, 180);
 
     let rightLatLng = this.getLatitudeLongitude(latitude, longitude, radius, 90);
     let leftLatLng = this.getLatitudeLongitude(latitude, longitude, radius, 270);
 
-    return this.cityModel.find({
+    return this.query({
       name: { $regex: '^' + name + '.*' },
       lat: { $gte: bottomLatLng[0], $lt: topLatLng[0] },
       long: { $gte: leftLatLng[1], $lt: rightLatLng[1] }
-    }).exec();
+    });
   }
 
   /**
@@ -99,7 +99,7 @@ export class SuggestionsService {
    * @param radius Radius in meters
    * @returns List of cities
    */
-  async find(name: string, latitude: number = null, longitude: number = null, radius: number = null): Promise<City[]> {
+  find(name: string, latitude: number = null, longitude: number = null, radius: number = null): Promise<CityModel[]> {
     if (radius > 0) {
       if (!latitude || !longitude) {
         throw new RequiredParameterException("Latitude, Longitude");
@@ -114,11 +114,16 @@ export class SuggestionsService {
     return this.findByName(name);
   }
 
-  async findOne(id: string): Promise<City> {
-    return this.cityModel.findOne({ _id: id }).exec();
-  }
-
-  async findAll(): Promise<City[]> {
-    return this.cityModel.find().exec();
+  /**
+   * Find city by id
+   * @param id City id
+   * @returns City
+   */
+  async findOne(id: string): Promise<CityModel> {
+    const results = await this.query({ id: id });
+    if (results && results.length > 0) {
+      return results[0];
+    }
+    return null
   }
 }
