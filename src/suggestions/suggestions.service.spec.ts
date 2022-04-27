@@ -19,24 +19,16 @@ describe('SuggestionsService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should convert degree to radian"', () => {
-    expect(service.degreeToRadian(10)).toEqual(0.17);
+  it('should return cities with london name', () => {
+    expect(service.find("London")).resolves.toBeInstanceOf(Array);
   });
 
-  it('should return right latitude', () => {
-    expect(service.getLatitude(1, 1)).toEqual(1.008995);
+  it('should return cities with london name and specified coordinate', () => {
+    expect(service.find("London",43.70011,-79.4163)).resolves.toBeInstanceOf(Array);
   });
 
-  it('should return left latitude', () => {
-    expect(service.getLatitude(1.008995, -1)).toEqual(1);
-  });
-
-  it('should return higher longitude', () => {
-    expect(service.getLongitude(1, 1)).toEqual(1.008995);
-  });
-
-  it('should return lower longitude', () => {
-    expect(service.getLongitude(1.008995, 1)).toEqual(1);
+  it('should return cities with london name and specified area', () => {
+    expect(service.find("London",43.70011,-79.4163,5)).resolves.toBeInstanceOf(Array);
   });
 
 });
