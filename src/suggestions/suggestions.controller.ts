@@ -16,9 +16,13 @@ export class SuggestionsController {
         @Query('sort') sort: SortType): Promise<City[]> {
 
         if (!query) {
-            throw new RequiredParameterException("Query can be complete or partial!");
+            throw new RequiredParameterException("query");
         }
 
-        return await this.suggestionsService.findAll();
+        latitude = parseFloat(latitude.toString());
+        longitude = parseFloat(longitude.toString());
+        radius = parseFloat(radius.toString());
+
+        return await this.suggestionsService.find(query, latitude, longitude, radius * 1000);
     }
 }
